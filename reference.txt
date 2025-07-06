@@ -1,0 +1,107 @@
+package com.jdbc;
+
+import java.sql.*;
+import java.util.Scanner;
+
+public class App {
+
+    private static final String url = "jdbc:mysql://localhost:3306/mydb";
+
+    private static final String username = "root";
+
+    private static final String password = "Sachin@12345";
+
+    public static void main(String[] args) {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver"); // Loading the Driver for the MySql
+        } catch (ClassNotFoundException e) {
+            System.out.println(e.getMessage());
+        }
+
+        try {
+
+            // Connection connection = DriverManager.getConnection(url, username, password);
+
+            // String query1 = "INSERT INTO students (name, age, marks) VALUES (?, ?, ?);";
+            // PreparedStatement ps = connection.prepareStatement(query1);
+            // ps.setString(1, "Vishvanath");
+            // ps.setInt(2, 50);
+            // ps.setDouble(3, 45.8390898309580928);
+            // int addedRows = ps.executeUpdate();
+            // if(addedRows > 0){
+            //     System.out.println("Data Added Successfully !!");
+            // }
+
+            // Statement statement = connection.createStatement();
+            // String query = "SELECT * FROM students";
+            // String updateQuery = String.format("UPDATE students SET marks = %f WHERE id =
+            // %d", 0.0, 5);
+            // int rowsAffected = statement.executeUpdate(updateQuery);
+            // System.out.println(rows);
+            // if(rowsAffected > 0) {
+            // System.out.println("Data updated successfully");
+            // }
+            // ResultSet resultSet = statement.executeQuery(query);
+
+            // while (resultSet.next()) {
+            //     int id = resultSet.getInt("id");
+            //     String name = resultSet.getString("name");
+            //     int age = resultSet.getInt("age");
+            //     double marks = resultSet.getDouble("marks");
+
+            //     System.out.println(id + " : " + name + " : " + age + " : " + marks);
+            // }
+
+            // connection.close();
+
+            // BATCH PRocessing
+
+            Scanner sc = new Scanner(System.in);
+
+            Connection con = DriverManager.getConnection(url, username, password);
+            Statement statement = con.createStatement();
+            while (true) {
+                System.out.print("Enter name : ");
+                String name = sc.next();
+                System.out.print("Enter age : ");
+                int age = sc.nextInt();
+                System.out.print("Enter marks : ");
+                double marks = sc.nextDouble();
+                System.out.print("You want to add more data (Y/N)? : ");
+                String choice = sc.next();
+                String query = String.format("INSERT INTO students (name, age, marks) VALUES ('%s', %d, %f)", name, age, marks);
+                statement.addBatch(query);
+                if(choice.toUpperCase().equals("N")) break;
+            }
+            int[] arr = statement.executeBatch();
+
+            for (int i = 0; i<arr.length; i++){
+                if(arr[i] == 0){
+                    System.out.println("Query " + i+1 + "is not executed properly !!!");
+                }else{
+                    System.out.println("Query " + i+1 + "is executed!!!");
+                }
+            }
+
+            System.out.println();
+            System.out.println("UPDATED STUDENTS TABLE");
+            String query = "SELECT * FROM students";
+            ResultSet resultSet = statement.executeQuery(query);
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                String name = resultSet.getString("name");
+                int age = resultSet.getInt("age");
+                double marks = resultSet.getDouble("marks");
+
+                System.out.println(id + " : " + name + " : " + age + " : " + marks);
+            }
+
+            con.close();
+            sc.close();
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+    }
+}
