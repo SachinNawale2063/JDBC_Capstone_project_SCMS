@@ -15,6 +15,8 @@ public class Main {
 
         try {
 
+            System.out.println("Hi welcome Guys Good morning");
+
             System.out.println("WELCOME TO MY SMALL JDBC PROJECT : student course management system !!!!\n\n");
 
             System.out.println("Functionalities that I provide : ");
